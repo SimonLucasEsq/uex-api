@@ -1,4 +1,3 @@
 class CareerSerializer < ActiveModel::Serializer
-    attributes :id, :name
-  end
-  
+  attributes :id, :name
+end

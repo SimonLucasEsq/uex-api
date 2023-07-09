@@ -12,14 +12,6 @@ module Api
         render json: careers, each_serializer: CareerSerializer, meta: meta_attributes(careers)
       end
   
-      def meta_attributes(career)
-        { 
-          per_page: per_page,
-          total_pages: career.total_pages,
-          total_objects: career.total_entries
-        }
-      end
-  
       def show
         render json: @career
       end

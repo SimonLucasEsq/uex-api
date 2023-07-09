@@ -1,5 +1,5 @@
 class Api::ProfessorsController < Api::BaseController
-  before_action :set_professor, only: [:create, :show, :update, :destroy]
+  before_action :set_professor, only: [:create, :show, :update, :destroy, :export_professor_data]
 
   def create
     @professor.save!
@@ -9,14 +9,6 @@ class Api::ProfessorsController < Api::BaseController
   def index
     professors = Professor.includes(:person, professor_careers: :career).search(params).paginate(page: page, per_page: per_page)
     render json: professors, each_serializer: ProfessorSerializer, meta: meta_attributes(professors)
-  end
-
-  def meta_attributes(professors)
-    { 
-      per_page: per_page,
-      total_pages: professors.total_pages,
-      total_objects: professors.total_entries
-    }
   end
 
   def show
@@ -32,7 +24,24 @@ class Api::ProfessorsController < Api::BaseController
     @professor.destroy!
   end
 
+  def import_csv
+    professor_csv = Imports::ProfessorCsv.new(params[:file])
+    result = professor_csv.import
+    render json: { message: result }, status: :ok
+  end
+
+  def export_professor_data
+    result = Exports::PersonSheetGeneratorServices.call(@professor)
+
+    send_data(
+      result[:data_stream],
+      filename: result[:filename],
+      disposition: 'attachment',
+    )
+  end
+
   private
+
   def set_professor
     @professor = if params[:id]
       Professor.includes(:person, professor_careers: :career).find(params[:id])
@@ -45,7 +54,7 @@ class Api::ProfessorsController < Api::BaseController
     params[:professor][:person_attributes] = params[:professor].delete(:person)
     params[:professor][:professor_careers_attributes] = params[:professor].delete(:professor_careers)
     params.require(:professor).permit(
-      person_attributes: [:id, :name, :first_name, :last_name, :email, :phone_number, :id_card, :address],
+      person_attributes: [:id, :name, :first_name, :last_name, :email, :phone_number, :id_card, :address, :sex],
       professor_careers_attributes: [:id, :career_id, :_destroy]
     )
   end

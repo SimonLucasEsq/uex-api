@@ -11,14 +11,6 @@ class Api::OrganizationsController < Api::BaseController
     render json: organizations, each_serializer: OrganizationSerializer, meta: meta_attributes(organizations)
   end
 
-  def meta_attributes(organizations)
-    {
-      per_page: per_page,
-      total_pages: organizations.total_pages,
-      total_objects: organizations.total_entries
-    }
-  end
-
   def show
     render json: @organization
   end

@@ -1,0 +1,25 @@
+es:
+  activerecord:
+    models:
+      person: Persona
+    attributes:
+      person:
+        email: Correo
+        sexes:
+          male: Masculino
+          female: Femenino
+      student:
+        career: Carrera
+    errors:
+      messages:
+        invalid_status_flow: 'No se puede cambiar el estado de %{status_was} a %{status}'
+  services:
+    imports:
+      row: Fila
+      messages:
+        imported_records: Se importaron %{count} registros
+        no_imported_records: "Filas no importadas: %{rows_errors}"
+        blank_csv_file: No se recibió ningún archivo
+        missing_columns: "No se encontraron las columnas: %{missing_columns} en el archivo indicado"
+        import_fail: No se pudo importar ningún registro
+        unexpected_error: Ocurrió un error al importar el archivo. Por favor, intente de nuevo

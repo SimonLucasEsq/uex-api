@@ -9,7 +9,7 @@ class Career < ApplicationRecord
       end
   
       def global_search(text)
-        where("name LIKE :search", search: "%#{text}%")
+        where("name ILIKE :search", search: "%#{text}%")
       end
     end
 end

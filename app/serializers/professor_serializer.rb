@@ -1,5 +1,5 @@
 class ProfessorSerializer < ActiveModel::Serializer
-  attributes :id
+  attributes :id, :person
   
   belongs_to :person
   has_many :professor_careers

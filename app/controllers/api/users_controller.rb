@@ -11,13 +11,6 @@ class Api::UsersController < Api::BaseController
     render json: users, each_serializer: UserSerializer, meta: meta_attributes(users)
   end
 
-  def meta_attributes(users)
-    {
-      per_page: per_page,
-      total_pages: users.total_pages,
-      total_objects: users.total_entries
-    }
-  end
   def show
     render json: @user
   end
@@ -39,6 +32,6 @@ class Api::UsersController < Api::BaseController
   end
 
   def user_params
-    params.require(:user).permit(:email, :password)
+    params.require(:user).permit(:email, :username, :password)
   end
 end

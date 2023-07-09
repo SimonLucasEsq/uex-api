@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   has_secure_password
-  validates_presence_of :email, uniqueness: { case_sensitive: false }
+  validates_presence_of :username, :email, uniqueness: { case_sensitive: false }
 
   class << self
     def search(params)
@@ -10,7 +10,7 @@ class User < ApplicationRecord
     end
 
     def global_search(text)
-      where("email LIKE :search", search: "%#{text}%")
+      where("email LIKE :search OR username LIKE :search", search: "%#{text}%")
     end
   end
 end

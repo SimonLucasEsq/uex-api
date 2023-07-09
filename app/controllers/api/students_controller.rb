@@ -1,5 +1,5 @@
 class Api::StudentsController < Api::BaseController
-  before_action :set_student, only: [:create, :show, :update, :destroy]
+  before_action :set_student, only: [:create, :show, :update, :destroy, :export_student_data]
 
   def create
     @student.save!
@@ -9,14 +9,6 @@ class Api::StudentsController < Api::BaseController
   def index
     students = Student.includes(:person).search(params).paginate(page: page, per_page: per_page)
     render json: students, each_serializer: StudentSerializer, meta: meta_attributes(students)
-  end
-
-  def meta_attributes(students)
-    { 
-      per_page: per_page,
-      total_pages: students.total_pages,
-      total_objects: students.total_entries
-    }
   end
 
   def show
@@ -32,6 +24,22 @@ class Api::StudentsController < Api::BaseController
     @student.destroy!
   end
 
+  def import_csv
+    student_csv = Imports::StudentCsv.new(params[:file])
+    result = student_csv.import
+    render json: { message: result }, status: :ok
+  end
+
+  def export_student_data
+    result = Exports::PersonSheetGeneratorServices.call(@student)
+
+    send_data(
+      result[:data_stream],
+      filename: result[:filename],
+      disposition: 'attachment',
+    )
+  end
+
   private
   def set_student
     @student = if params[:id]
@@ -44,6 +52,6 @@ class Api::StudentsController < Api::BaseController
   def student_params
     params[:student][:person_attributes] = params[:student].delete(:person)
     params.require(:student).permit(:id, :hours, :submitted, :admission_year, :career_id,
-      person_attributes: [:id, :name, :first_name, :last_name, :email, :phone_number, :id_card, :address])                                              
+      person_attributes: [:id, :name, :first_name, :last_name, :email, :phone_number, :id_card, :address, :sex])
   end
 end

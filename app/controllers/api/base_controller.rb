@@ -1,8 +1,12 @@
 class Api::BaseController < ApplicationController
   before_action :authorize_access_request!
 
+  MAX_PER_PAGE = 100
+  DEFAULT_PER_PAGE = 10
+
+  private
   def per_page
-    params[:per_page] || 10
+    (params[:per_page].blank? || params[:per_page].to_i > MAX_PER_PAGE) ? DEFAULT_PER_PAGE : params[:per_page].to_i
   end
 
   def page
