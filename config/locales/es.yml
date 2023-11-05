@@ -23,3 +23,8 @@ es:
         missing_columns: "No se encontraron las columnas: %{missing_columns} en el archivo indicado"
         import_fail: No se pudo importar ningún registro
         unexpected_error: Ocurrió un error al importar el archivo. Por favor, intente de nuevo
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%b %d"
+      long: "%B %d, %Y"

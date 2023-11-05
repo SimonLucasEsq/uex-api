@@ -58,15 +58,21 @@ gem 'caxlsx'
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
-
-  # RSpec testing framework to Ruby on Rails [https://github.com/rspec/rspec-rails]
-  gem "rspec-rails", "~> 6.0.0"
-
-  # Fixtures replacement with a straightforward definition syntax [https://github.com/thoughtbot/factory_bot_rails]
-  gem "factory_bot_rails", "~> 6.2.0"
 end
 
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+end
+
+group :test do
+  # RSpec testing framework to Ruby on Rails [https://github.com/rspec/rspec-rails]
+  gem "rspec-rails", "~> 6.0.0"
+
+  # Fixtures replacement with a straightforward definition syntax [https://github.com/thoughtbot/factory_bot_rails]
+  gem "factory_bot_rails", "~> 6.2.0"
+
+  # Shoulda Matchers provides RSpec- and Minitest-compatible one-liners to test common Rails functionality that,
+  # if written by hand, would be much longer, more complex, and error-prone [https://github.com/thoughtbot/shoulda-matchers]
+  gem 'shoulda-matchers', '~> 5.0'
 end

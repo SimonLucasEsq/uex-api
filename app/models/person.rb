@@ -11,6 +11,10 @@ class Person < ApplicationRecord
   validates_uniqueness_of :id_card, :email
   validates :email, format: {with: URI::MailTo::EMAIL_REGEXP}
 
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
   def merge_errors(model_object)
     return if errors.any?
 

@@ -1,5 +1,8 @@
 class ActivityType < ApplicationRecord
   validates_presence_of :name, :description
+  has_many :activity_sub_types
+
+  accepts_nested_attributes_for :activity_sub_types, allow_destroy: true
 
   class << self
     def search(params)

@@ -37,13 +37,14 @@ class Activity < ApplicationRecord
     }
   }.freeze
 
-  belongs_to :activity_type
   belongs_to :professor
   belongs_to :organizing_organization, class_name: 'Organization', foreign_key: 'organizing_organization_id', optional: true
   belongs_to :partner_organization, class_name: 'Organization', foreign_key: 'partner_organization_id', optional: true
   has_many :activity_careers, dependent: :destroy
   has_many :careers, through: :activity_careers
   has_many :activity_weeks, dependent: :destroy
+  has_many :activities_activity_sub_types, dependent: :destroy
+  has_many :activity_sub_types, through: :activities_activity_sub_types, dependent: :destroy
   has_one :beneficiary_detail, dependent: :destroy
 
   validates_uniqueness_of :name
@@ -53,6 +54,7 @@ class Activity < ApplicationRecord
   accepts_nested_attributes_for :activity_weeks
   accepts_nested_attributes_for :activity_careers, allow_destroy: true
   accepts_nested_attributes_for :beneficiary_detail, allow_destroy: true
+  accepts_nested_attributes_for :activities_activity_sub_types, allow_destroy: true
 
   class << self
     def search(params)
@@ -63,9 +65,9 @@ class Activity < ApplicationRecord
     end
 
     def global_search(text)
-      joins(:activity_type, professor: :person)
+      joins(:activity_sub_types, professor: :person)
         .where(
-          "activities.name ILIKE :search OR activity_types.name ILIKE :search OR CONCAT_WS(' ', first_name, last_name) ILIKE :search",
+          "activities.name ILIKE :search OR activity_sub_types.name ILIKE :search OR CONCAT_WS(' ', first_name, last_name) ILIKE :search",
           search: "%#{text}%"
         )
     end

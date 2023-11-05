@@ -1,7 +1,7 @@
 class Organization < ApplicationRecord
-  validates_presence_of :name, :contact_phonenumber
+  validates_presence_of :name
   validates_uniqueness_of :contact_email
-  validates :contact_email, format: {with: URI::MailTo::EMAIL_REGEXP}
+  validates :contact_email, format: {with: URI::MailTo::EMAIL_REGEXP}, if: :contact_email
 
   class << self
     def search(params)

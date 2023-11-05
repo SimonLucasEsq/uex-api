@@ -33,26 +33,22 @@ class Exports::PersonSheetGeneratorServices < ApplicationService
         sheet.add_row ['B - ACTIVIDADES DE EXTENSIÓN UNIVERSITARIA']
         sheet.add_row ['No', 'DENOMINACIÓN DE ACTIVIDAD', 'TIPO DE ACTIVIDAD', 'RESPONSABLE', 'FECHA', 'LUGAR', 'HORAS DE EXTENSIÓN', 'EVALUACIÓN']
 
-
-        #participant_results_activity_week_sql = entity
-        #  .activity_week_participants
-        #  .select("activity_week_id, SUM(hours) as hours, SUM(hours) as hours2")
-        #  .group(:activity_week_id)
-        #  .to_sql
-        #participant_results_activity_week = ActiveRecord::Base.connection.execute(participant_results_activity_week.to_sql)
-
         index = 1
         activities.each do |activity|
           activity_week_participants = activity_week_participants_by_activities[activity.id]
 
           if activity_week_participants
             activity_week_participants.each do |awp|
-              sheet.add_row [index, activity.name, activity.activity_type.name, activity.professor.full_name, awp.activity_week.date_formatted, activity.address, awp.hours, awp.evaluation]
+              hours = awp.hours if awp.student?
+              evaluation = awp.evaluation if awp.student?
+              sheet.add_row [index, activity.name, awp.activity_sub_type.name, activity.professor.full_name, awp.activity_week.date_formatted, activity.address, hours, evaluation]
               index += 1
             end
           else
-            sheet.add_row [index, activity.name, activity.activity_type.name, activity.professor.full_name, activity.date_formatted, activity.address, "", ""]
-            index += 1
+            activity.activity_sub_types.each do |activity_sub_type|
+              sheet.add_row [index, activity.name, activity_sub_type.name, activity.professor.full_name, activity.date_formatted, activity.address, "", ""]
+              index += 1
+            end
           end
         end
       end
@@ -69,7 +65,7 @@ class Exports::PersonSheetGeneratorServices < ApplicationService
     return @activities if @activities
 
     @activities = Activity
-      .includes(:professor, :activity_type)
+      .includes(:professor, :activity_sub_types)
       .where(id: activity_week_participants.map { |awp| awp.activity_week.activity_id }.uniq)
     @activities = @activities.or(Activity.where(professor_id: @entity)) if professor?
     @activities = @activities.uniq

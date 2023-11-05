@@ -7,7 +7,7 @@ class Api::ActivityTypesController < Api::BaseController
   end
 
   def index
-    activity_types = ActivityType.search(params).paginate(page: page, per_page: per_page)
+    activity_types = ActivityType.includes(:activity_sub_types).search(params).paginate(page: page, per_page: per_page)
     render json: activity_types, each_serializer: ActivityTypeSerializer, meta: meta_attributes(activity_types)
   end
 
@@ -34,6 +34,9 @@ class Api::ActivityTypesController < Api::BaseController
   end
 
   def activity_type_params
-    params.require(:activity_type).permit(:name, :description)
+    return @_activity_sub_types if @_activity_sub_types
+
+    params[:activity_type][:activity_sub_types_attributes] = params[:activity_type].delete(:activity_sub_types)
+    @_activity_sub_types = params.require(:activity_type).permit(:name, :description, activity_sub_types_attributes: [:id, :name, :hours, :unlimited_hours, :_destroy])
   end
 end

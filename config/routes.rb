@@ -5,12 +5,13 @@ Rails.application.routes.draw do
   # root "articles#index"
   namespace :api, defaults: {format: :json} do
     resources :activity_types, only: [:create, :update, :show, :index, :destroy]
-    resources :users, only: [:create, :show, :index, :destroy]
+    resources :users, only: [:create, :show, :index, :destroy, :update]
     resources :careers, only: [:create, :update, :show, :index, :destroy]
     resources :organizations, only: [:create, :update, :show, :index, :destroy]
     resources :students, only: [:create, :update, :show, :index, :destroy] do
       member do
         get :export_student_data, format: :xlsx
+        put :update_status
       end
 
       collection do
@@ -30,9 +31,18 @@ Rails.application.routes.draw do
       member do
         put :update_status
       end
+      collection do
+        get :export_project_list_report, format: :xlsx
+        get :export_statistical_report, format: :xlsx
+      end
     end
-    resources :activity_weeks, only: [:create, :update, :show, :index, :destroy]
+    resources :activity_weeks, only: [:create, :update, :show, :index, :destroy] do
+      member do
+        post :register_hours
+      end
+    end
     resources :activity_week_participants, only: [:create, :update, :show, :index, :destroy]
+    resources :activity_sub_types, only: [:index]
   end
 
   post "refresh", controller: :refresh, action: :create

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_28_071726) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_23_225448) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,7 +20,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_071726) do
     t.string "address"
     t.boolean "virtual_participation"
     t.bigint "professor_id", null: false
-    t.bigint "activity_type_id", null: false
     t.bigint "organizing_organization_id"
     t.bigint "partner_organization_id"
     t.string "project_link"
@@ -35,10 +34,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_071726) do
     t.integer "evaluation"
     t.date "approved_at"
     t.string "resolution_number"
-    t.index ["activity_type_id"], name: "index_activities_on_activity_type_id"
+    t.text "objective"
     t.index ["organizing_organization_id"], name: "index_activities_on_organizing_organization_id"
     t.index ["partner_organization_id"], name: "index_activities_on_partner_organization_id"
     t.index ["professor_id"], name: "index_activities_on_professor_id"
+  end
+
+  create_table "activities_activity_sub_types", force: :cascade do |t|
+    t.bigint "activity_id", null: false
+    t.bigint "activity_sub_type_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id"], name: "index_activities_activity_sub_types_on_activity_id"
+    t.index ["activity_sub_type_id"], name: "index_activities_activity_sub_types_on_activity_sub_type_id"
   end
 
   create_table "activity_careers", force: :cascade do |t|
@@ -48,6 +56,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_071726) do
     t.datetime "updated_at", null: false
     t.index ["activity_id"], name: "index_activity_careers_on_activity_id"
     t.index ["career_id"], name: "index_activity_careers_on_career_id"
+  end
+
+  create_table "activity_sub_types", force: :cascade do |t|
+    t.bigint "activity_type_id", null: false
+    t.boolean "unlimited_hours"
+    t.string "name"
+    t.integer "hours"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_type_id"], name: "index_activity_sub_types_on_activity_type_id"
   end
 
   create_table "activity_types", force: :cascade do |t|
@@ -65,6 +83,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_071726) do
     t.bigint "participable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "activity_sub_type_id"
+    t.integer "registered_hours"
+    t.string "description"
+    t.index ["activity_sub_type_id"], name: "index_activity_week_participants_on_activity_sub_type_id"
     t.index ["activity_week_id"], name: "index_activity_week_participants_on_activity_week_id"
     t.index ["participable_type", "participable_id"], name: "index_activity_week_participants_on_participable"
   end
@@ -141,6 +163,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_071726) do
     t.bigint "career_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status", default: 0
     t.index ["career_id"], name: "index_students_on_career_id"
     t.index ["person_id"], name: "index_students_on_person_id"
   end
@@ -153,12 +176,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_28_071726) do
     t.string "username"
   end
 
-  add_foreign_key "activities", "activity_types"
   add_foreign_key "activities", "organizations", column: "organizing_organization_id"
   add_foreign_key "activities", "organizations", column: "partner_organization_id"
   add_foreign_key "activities", "professors"
+  add_foreign_key "activities_activity_sub_types", "activities"
+  add_foreign_key "activities_activity_sub_types", "activity_sub_types"
   add_foreign_key "activity_careers", "activities"
   add_foreign_key "activity_careers", "careers"
+  add_foreign_key "activity_sub_types", "activity_types"
+  add_foreign_key "activity_week_participants", "activity_sub_types"
   add_foreign_key "activity_week_participants", "activity_weeks"
   add_foreign_key "activity_weeks", "activities"
   add_foreign_key "beneficiary_details", "activities"

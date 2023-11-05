@@ -1,5 +1,5 @@
 class Api::StudentsController < Api::BaseController
-  before_action :set_student, only: [:create, :show, :update, :destroy, :export_student_data]
+  before_action :set_student, only: [:create, :show, :update, :destroy, :export_student_data, :update_status]
 
   def create
     @student.save!
@@ -38,6 +38,12 @@ class Api::StudentsController < Api::BaseController
       filename: result[:filename],
       disposition: 'attachment',
     )
+  end
+
+  def update_status
+    result = Models::UpdateStudentStatusServices.call(@student, params[:status])
+
+    render json: result
   end
 
   private

@@ -1,5 +1,5 @@
 class Api::ActivityWeeksController < Api::BaseController
-  before_action :set_activity_week, only: [:create, :show, :update, :destroy]
+  before_action :set_activity_week, only: [:create, :show, :update, :destroy, :register_hours]
 
   def create
     @activity_week.save!
@@ -16,12 +16,19 @@ class Api::ActivityWeeksController < Api::BaseController
   end
 
   def update
-    @activity_week.update!(activity_week_params)
-    render json: @activity_week
+    Models::UpdateActivityWeekServices.call(@activity_week, activity_week_params)
+
+    render json: @activity_week.reload
   end
 
   def destroy
     @activity_week.destroy!
+  end
+
+  def register_hours
+    Models::UpdateStudentHoursParticipation.call(@activity_week.activity_week_participants)
+
+    render json: @activity_week
   end
 
   private
@@ -34,9 +41,12 @@ class Api::ActivityWeeksController < Api::BaseController
   end
 
   def activity_week_params
+    return @activity_week_params if @activity_week_params
+
     params[:activity_week][:activity_week_participants_attributes] = params[:activity_week].delete(:activity_week_participants)
-    params
+    @activity_week_params = params
       .require(:activity_week)
-      .permit(:id, :activity_id, :start_date, :end_date, activity_week_participants_attributes: [:id, :activity_week_id, :participable_id, :participable_type, :hours, :evaluation, :_destroy])
+      .permit(:id, :activity_id, :start_date, :end_date, activity_week_participants_attributes:
+        [:id, :activity_week_id, :activity_sub_type_id, :participable_id, :participable_type, :hours, :evaluation, :description, :_destroy])
   end
 end
