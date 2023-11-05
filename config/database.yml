@@ -87,6 +87,7 @@ test:
 #
 production:
   <<: *default
-  database: uex_production
-  username: uex_api
-  password: <%= ENV["UEX_API_DATABASE_PASSWORD"] %>
+  database: <%= Rails.application.credentials.database %>
+  username: <%= Rails.application.credentials.username %>
+  password: <%= Rails.application.credentials.password %>
+  host: <%= Rails.application.credentials.host %>

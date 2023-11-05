@@ -1,1 +1,1 @@
-JWTSessions.signing_key = 'my secret key for uex'
+JWTSessions.signing_key = Rails.application.credentials.jwt_signing_key
