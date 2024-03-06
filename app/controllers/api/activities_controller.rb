@@ -41,6 +41,16 @@ class Api::ActivitiesController < Api::BaseController
     )
   end
 
+  def export_statistical_report
+    result = Exports::StatisticalReportGeneratorServices.call(params)
+
+    send_data(
+      result[:data_stream],
+      filename: result[:filename],
+      disposition: 'attachment',
+    )
+  end
+
   private
   def set_activity
     @activity = if params[:id]

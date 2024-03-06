@@ -5,4 +5,10 @@ module Utility
 
     I18n.transliterate(string).squish.downcase
   end
+
+  def self.translate_boolean(value)
+    return I18n.t("booleans.#{value}") if value.in? [true, false]
+
+    ""
+  end
 end

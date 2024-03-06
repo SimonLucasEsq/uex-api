@@ -25,7 +25,7 @@ class Exports::ProjectListReportGeneratorServices < ApplicationService
           approved_at = I18n.l(activity.approved_at, format: :default)
           end_date = I18n.l(activity.end_date, format: :default)
           wrap = p.workbook.styles.add_style alignment: {vertical: :center, wrap_text: true}
-          sheet.add_row [activity.name, activity.resolution_number, approved_at, end_date, participants(activity), activity.objective, activity.professor.full_name, "", ""] , style: wrap
+          sheet.add_row [activity.name, activity.resolution_number, approved_at, end_date, participants(activity), activity.objective, activity.professor.full_name, activity.status, ""] , style: wrap
         end
       end
     end
