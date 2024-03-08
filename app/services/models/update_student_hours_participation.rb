@@ -40,18 +40,17 @@ class Models::UpdateStudentHoursParticipation < ApplicationService
   end
 
   def calculate_hours!(student, participant)
-    new_hours = student.hours
-    new_hours -= participant.registered_hours if participant.registered_hours
-    new_hours += participant.hours
+    student.hours -= participant.registered_hours if participant.registered_hours
 
     acumulated_hours = student_hours_by_activity_sub_type(student, participant)
 
-    if (new_hours + acumulated_hours) <= participant.activity_sub_type.hours || participant.activity_sub_type.unlimited_hours
-      student.hours = (new_hours + acumulated_hours)
+    if participant.activity_sub_type.unlimited_hours || (participant.hours + acumulated_hours) <= participant.activity_sub_type.hours
+      student.hours += participant.hours
       participant.registered_hours = participant.hours
     else
-      student.hours = participant.activity_sub_type.hours
-      participant.registered_hours = student.hours - acumulated_hours 
+      difference_hours = participant.activity_sub_type.hours - acumulated_hours 
+      student.hours += difference_hours
+      participant.registered_hours = difference_hours
     end
   end
 

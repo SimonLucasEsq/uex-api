@@ -83,7 +83,7 @@ class Exports::StatisticalReportGeneratorServices < ApplicationService
 
   def table_headers(sheet, semester, styles)
     sheet.add_row [I18n.t("services.exports.statical_report_generator_services.#{semester}"), 'FORM. D.A.E N']
-    sheet.add_row ['Mes/A']
+    sheet.add_row ["Mes/#{@year}"]
     sheet.add_row ['Extensión Universitaria'], style: styles[:subtitle]
     row_index = sheet.rows.size
     sheet.merge_cells "A#{row_index}:P#{row_index}"
