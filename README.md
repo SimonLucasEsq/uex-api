@@ -42,3 +42,8 @@ los siguientes comandos:
 rails assets:precompile RAILS_ENV=production
 rails server -e production
 ```
+* Para correr los tests ejecuta los siguientes comandos:
+```
+rake db:test:prepare
+rspec spec/
+```
